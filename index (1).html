@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora</title>
+    <style>
+        /* O CSS VAI AQUI DENTRO */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body { background: #1e1e2f; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .calculator { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 20px; width: 320px; border: 1px solid rgba(255,255,255,0.2); }
+        .display { background: rgba(0,0,0,0.3); color: white; padding: 20px; text-align: right; border-radius: 10px; margin-bottom: 20px; min-height: 80px; }
+        #current-operation { font-size: 2rem; }
+        .buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        button { height: 60px; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 1.2rem; cursor: pointer; }
+        button:active { background: rgba(255,255,255,0.3); }
+        .btn-operator { color: #ff9f0a; }
+        .btn-equal { background: #ff9f0a; grid-column: span 1; }
+        .btn-zero { grid-column: span 2; }
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <div class="display">
+            <div id="previous-operation"></div>
+            <div id="current-operation">0</div>
+        </div>
+        <div class="buttons">
+            <button onclick="clearAll()" style="color: #ff3b30;">AC</button>
+            <button onclick="deleteDigit()">DEL</button>
+            <button class="btn-operator" onclick="appendOperator('/')">÷</button>
+            <button class="btn-operator" onclick="appendOperator('*')">×</button>
+            <button onclick="appendNumber('7')">7</button>
+            <button onclick="appendNumber('8')">8</button>
+            <button onclick="appendNumber('9')">9</button>
+            <button class="btn-operator" onclick="appendOperator('-')">-</button>
+            <button onclick="appendNumber('4')">4</button>
+            <button onclick="appendNumber('5')">5</button>
+            <button onclick="appendNumber('6')">6</button>
+            <button class="btn-operator" onclick="appendOperator('+')">+</button>
+            <button onclick="appendNumber('1')">1</button>
+            <button onclick="appendNumber('2')">2</button>
+            <button onclick="appendNumber('3')">3</button>
+            <button class="btn-equal" onclick="calculate()">=</button>
+            <button class="btn-zero" onclick="appendNumber('0')">0</button>
+            <button onclick="appendNumber('.')">.</button>
+        </div>
+    </div>
+
+    <script>
+        // O JAVASCRIPT VAI AQUI DENTRO
+        let currentInput = '0';
+        let previousInput = '';
+        let operator = null;
+
+        const currentDisplay = document.getElementById('current-operation');
+        const previousDisplay = document.getElementById('previous-operation');
+
+        function updateDisplay() {
+            currentDisplay.innerText = currentInput;
+            previousDisplay.innerText = previousInput;
+        }
+
+        function appendNumber(num) {
+            if (currentInput === '0' && num !== '.') currentInput = num;
+            else if (num === '.' && currentInput.includes('.')) return;
+            else currentInput += num;
+            updateDisplay();
+        }
+
+        function appendOperator(op) {
+            if (operator !== null) calculate();
+            operator = op;
+            previousInput = currentInput + " " + op;
+            currentInput = '0';
+            updateDisplay();
+        }
+
+        function clearAll() {
+            currentInput = '0'; previousInput = ''; operator = null;
+            updateDisplay();
+        }
+
+        function deleteDigit() {
+            currentInput = currentInput.length > 1 ? currentInput.slice(0, -1) : '0';
+            updateDisplay();
+        }
+
+        function calculate() {
+            let result;
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+            if (isNaN(prev) || isNaN(current)) return;
+            switch (operator) {
+                case '+': result = prev + current; break;
+                case '-': result = prev - current; break;
+                case '*': result = prev * current; break;
+                case '/': result = prev / current; break;
+                default: return;
+            }
+            currentInput = result.toString();
+            operator = null; previousInput = '';
+            updateDisplay();
+        }
+    </script>
+</body>
+</html>
+
